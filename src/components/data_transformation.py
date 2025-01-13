@@ -20,7 +20,7 @@ from src.logger import logging
 # Defining a class for data transformation
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file = os.path.join('artifcats', "preprocessor.pkl")
+    preprocessor_obj_file = os.path.join('artifacts', "preprocessor.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -40,7 +40,7 @@ class DataTransformation:
             num_pipeline = Pipeline(
                 steps = [
                     ("imputer", SimpleImputer(strategy= "median")),
-                    ("scaler",StandardScaler())
+                    ("scaler",StandardScaler(with_mean=False))
                 ]
             )
 
@@ -48,7 +48,7 @@ class DataTransformation:
                 steps = [
                     ("imputer", SimpleImputer(strategy="most_frequent")), #Replpace missing values with mode 
                     ("One_hot_encoder", OneHotEncoder()),
-                    ("scaler",StandardScaler())
+                    ("scaler",StandardScaler(with_mean=False))
                 ]
             )
 
