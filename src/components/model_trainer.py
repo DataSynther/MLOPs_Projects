@@ -45,18 +45,41 @@ class ModelTrainer:
                 test_arr[:,-1]
             )
             #Model dictionary
+          
+            # Define the models and parameters
             models = {
-                "Random Forest": RandomForestRegressor(),
                 "Decision Tree": DecisionTreeRegressor(),
-                "Garadient Boosting": GradientBoostingRegressor(),
-                "Liner Regression": LinearRegression(),
-                "K-Neighbors Regressor": KNeighborsRegressor(),
+                "Random Forest": RandomForestRegressor(),
                 "XGBRegressor": XGBRegressor(),
-                "CatBoosting Regressor": CatBoostRegressor(),
+                "CatBoosting Regressor": CatBoostRegressor(verbose=0),
                 "AdaBoost Regressor": AdaBoostRegressor(),
             }
+
+            params = {
+                "Decision Tree": {
+                    'criterion': ['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
+                },
+                "Random Forest": {
+                    'n_estimators': [8, 16, 32, 64, 128, 256],
+                },
+                "XGBRegressor": {
+                    'learning_rate': [0.01, 0.1, 0.2],
+                    'n_estimators': [100, 200, 300],
+                },
+                "CatBoosting Regressor": {
+                    'depth': [6, 8, 10],
+                    'learning_rate': [0.01, 0.1, 0.2],
+                    'iterations': [100, 200, 300],
+                },
+                "AdaBoost Regressor": {
+                    'n_estimators': [50, 100, 200],
+                    'learning_rate': [0.01, 0.1, 0.2],
+                },
+            }
+
+       
             #Model training and evaluation
-            model_report:dict = evalute_model(X_train=X_train, y_train=y_train, X_test = X_test, y_test= y_test, models=models)
+            model_report = evalute_model(X_train=X_train, y_train=y_train, X_test = X_test, y_test= y_test, models=models,param =params)
             logging.info(f"Model training and evaluation is completed")
 
             #To get best model score and model name sorted by score

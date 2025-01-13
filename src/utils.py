@@ -11,6 +11,7 @@ import dill
 from src.exception import CustomException
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from src.logger import logging
 
 def save_object(file_path,obj):
@@ -28,7 +29,7 @@ def save_object(file_path,obj):
     except Exception as e:
         raise CustomException(e,sys)
     
-def evalute_model(X_train, X_test, y_train, y_test, models):
+def evalute_model(X_train, X_test, y_train, y_test, models,param):
     
     '''
     This function is responsible for training the model and evaluating the model performance
@@ -41,8 +42,18 @@ def evalute_model(X_train, X_test, y_train, y_test, models):
         for i in range(len(list(models))):
             model = list(models.values())[i]
             model_name = list(models.keys())[i]
+
+            para = param[model_name]
+            logging.info( f"Printing model parameter value as {param}")
             
             #Train the model
+            gs = GridSearchCV(estimator=model, param_grid=para, cv=5)
+            logging.info( f"Printing model Grid Seach as {gs}")
+            gs.fit(X_train, y_train)
+            
+            # Set the best parameters to the model
+            best_params = gs.best_params_
+            model.set_params(**best_params)
             model.fit(X_train, y_train)
 
             y_train_pred = model.predict(X_train)
@@ -53,7 +64,7 @@ def evalute_model(X_train, X_test, y_train, y_test, models):
             test_model_score = r2_score(y_test, y_test_pred)
 
             #report creation
-            report[list(models.keys())[i]] = test_model_score
+            report[model_name] = test_model_score
 
         return report
         
